@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Mic, Languages, Zap, Bot, User } from 'lucide-react'
 import cx from 'classnames'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
@@ -6,10 +6,9 @@ import { Environment, OrbitControls, useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
 
 // ===================
-// 🔗 Your Ready Player Me avatar
+// 🔗 Your Ready Player Me avatar URL
 // ===================
-// Using a simpler GLB model that's known to work
-const AVATAR_URL = "https://models.readyplayer.me/63ce8a1d899f8a85f5d06b24.glb";
+const AVATAR_URL = "https://models.readyplayer.me/68af3926ec184ff7e956778b.glb"
 
 // ---------------- Avatar Utils ----------------
 function findBone(root: THREE.Object3D, names: string[]) {
@@ -24,62 +23,32 @@ function findBone(root: THREE.Object3D, names: string[]) {
 
 function usePortraitCamera(root: THREE.Object3D | null) {
   const { camera } = useThree()
+
   useEffect(() => {
     if (!root) return
-    const head = findBone(root, ['head'])
-    const chest = findBone(root, ['spine2', 'spine1', 'upperchest', 'chest', 'neck'])
-    const bb = new THREE.Box3().setFromObject(root)
 
+    // Find the head bone
+    const head = findBone(root, ['Head', 'head'])
     const headPos = new THREE.Vector3()
-    const chestPos = new THREE.Vector3()
-    if (head) (head as any).getWorldPosition?.(headPos)
-    else bb.getCenter(headPos)
-    if (chest) (chest as any).getWorldPosition?.(chestPos)
-    else chestPos.copy(bb.getCenter(new THREE.Vector3())).add(new THREE.Vector3(0, -0.25 * bb.getSize(new THREE.Vector3()).y, 0))
 
-    const center = headPos.clone().lerp(chestPos, 0.5)
-    const height = Math.max(0.001, headPos.distanceTo(chestPos)) * 2.0
+    if (head) {
+      (head as any).getWorldPosition?.(headPos)
+    } else {
+      // fallback: center of model
+      new THREE.Box3().setFromObject(root).getCenter(headPos)
+    }
 
-    const fov = THREE.MathUtils.degToRad((camera as THREE.PerspectiveCamera).fov || 35)
-    const dist = (height * 0.5) / Math.tan(fov / 2)
-
-    const dir = new THREE.Vector3(0, 0, 1)
-    const camPos = center.clone().add(dir.multiplyScalar(dist * 1.2))
-    camera.position.copy(camPos)
-    camera.lookAt(center)
+    // Place camera directly in front of the head
+    camera.position.set(headPos.x, headPos.y + 0.1, headPos.z + 0.6)
+    camera.lookAt(headPos.x, headPos.y, headPos.z)
     ;(camera as THREE.PerspectiveCamera).updateProjectionMatrix()
   }, [root, camera])
 }
 
+
 function AvatarModel() {
   const { scene } = useGLTF(AVATAR_URL)
   const group = useRef<THREE.Group>(null)
-
-  const root = useMemo(() => {
-    const g = new THREE.Group()
-    g.add(scene)
-    // Create a clone of the scene to avoid mutations
-    const clonedScene = scene.clone(true)
-    g.add(clonedScene)
-    g.traverse((o: any) => {
-      if (o.isMesh) {
-        o.frustumCulled = false
-        if (o.material) o.material.toneMapped = true
-        if (o.material) {
-          o.material = o.material.clone() // Clone materials
-          o.material.toneMapped = true
-        }
-      }
-    })
-    // Center and scale the model
-    const box = new THREE.Box3().setFromObject(g)
-    const center = box.getCenter(new THREE.Vector3())
-    g.position.sub(center)
-    const size = box.getSize(new THREE.Vector3())
-    const scale = 2 / Math.max(size.x, size.y, size.z)
-    g.scale.setScalar(scale)
-    return g
-  }, [scene])
 
   useFrame(({ clock }) => {
     if (!group.current) return
@@ -88,7 +57,7 @@ function AvatarModel() {
     group.current.rotation.y = Math.sin(t * 0.4) * 0.05
   })
 
-  return <group ref={group}><primitive object={root} /></group>
+  return <primitive ref={group} object={scene} />
 }
 
 function PortraitScene() {
@@ -102,16 +71,18 @@ function PortraitScene() {
       <directionalLight position={[2, 3, 5]} intensity={1.1} />
       <Environment preset="studio" />
       <AvatarModel />
-      <OrbitControls 
-        enablePan={false} 
-        enableZoom={false} 
-        minPolarAngle={Math.PI / 3.5} 
-        maxPolarAngle={Math.PI / 2.2}
-        target={[0, 0, 0]} 
+      <OrbitControls
+        enablePan={false}
+        enableZoom={false}
+        minPolarAngle={Math.PI / 2.5}
+        maxPolarAngle={Math.PI / 2.5}
+        target={[0, 1.6, 0]} // adjust height until it points to head
       />
     </>
   )
 }
+
+useGLTF.preload(AVATAR_URL)
 
 // ---------------- Voice Utils ----------------
 const getSpeechRecognition = () => {
