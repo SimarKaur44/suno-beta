@@ -1,69 +1,43 @@
-# React + TypeScript + Vite
+Suno Beta – Hindi Voice Assistant
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Suno Beta is an AI-powered voice assistant prototype built for Indian grandparents and elderly parents.
+It supports Hindi + English, provides voice interaction, and features a 3D animated avatar powered by Ready Player Me + React Three Fiber.
 
-Currently, two official plugins are available:
+🚀 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+🎤 Voice Input (Mic) – Speak in Hindi or English.
 
-## Expanding the ESLint configuration
+🔊 Text-to-Speech (TTS) – Assistant replies in the chosen language.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+🌐 Bilingual Support – Switch between English ↔ हिंदी anytime.
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+🧑‍🤖 3D Avatar – Interactive head-and-shoulders portrait using @react-three/fiber & drei.
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+💬 Chat UI – Simple conversation panel (bot + user messages).
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+🎨 Tailwind CSS – Clean, modern, responsive design.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+🛠️ Tech Stack
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+React + Vite
+ – Fast frontend tooling
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+TypeScript
+ – Strong typing
+
+Tailwind CSS
+ – Styling
+
+Framer Motion
+ – Smooth animations
+
+React Three Fiber
+ – 3D rendering
+
+drei
+ – Helpers for 3D scenes
+
+lucide-react
+ – Icons
+
+Web Speech API – Speech recognition + TTS
